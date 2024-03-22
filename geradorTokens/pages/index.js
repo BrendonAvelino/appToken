@@ -3,20 +3,29 @@ import Slider from "@react-native-community/slider";
 import { useState } from "react";
 import { ModalTokens } from '../components/modal';
 
+let caracteres = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 export function Home() {
 
-    const [qtde, defineQtde] = useState(6)
-    const [telaModal, configTelaModal]=useState(false)
-
     function gerarToken() {
-        configTelaModal(true);
+        let token = "";
+        for (let i = 0, n = caracteres.length; i < qtde; i++) {
+          token += caracteres.charAt(Math.floor(Math.random() * n));
         }
-        
+        configTelaModal(true);
+        configTokenValue(token);
+      }
+      
+    const [qtde, defineQtde] = useState(6)
+    const [telaModal, configTelaModal] = useState(false)
+    const [tokenValue, configTokenValue] = useState("")
+
     return (
         <View style={ESTILO.container}>
             <Image source={require("../assets/logo.png")} style={ESTILO.logo} />
-            <Text style={ESTILO.caracteres}>{qtde} Caracteres</Text>
+            <Text style={ESTILO.caracteres}>
+                {qtde} Caracteres
+            </Text>
             <View style={ESTILO.area}>
                 <Slider style={{ height: 50 }}
                     minimumValue={6}
@@ -25,20 +34,18 @@ export function Home() {
                     maximumTrackTintColor="#000"
                     thumbTintColor="#392de9"
                     value={qtde}
-                    onValueChange={(value) => defineQtde(value)}
-                    />
+                    onValueChange={(value) => defineQtde(value.toFixed(0))}
+                />
             </View>
-            
             <TouchableOpacity style={ESTILO.button} onPress={gerarToken}>
                 <Text style={ESTILO.buttonText}>
                     Gerar Senha
                 </Text>
             </TouchableOpacity>
             <Modal visible={telaModal} animationType="fade" transparent={true}>
-                <ModalTokens/>
+                <ModalTokens token={tokenValue} fechar={() => configTelaModal(false)} />
             </Modal>
         </View>
-
     )
 }
 
@@ -67,12 +74,12 @@ const ESTILO = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 8,
-      },
-      buttonText: {
+    },
+    buttonText: {
         color: "#FFF"
-      },
-      caracteres:{
-        fontSize:30,
-        fontWeight:"bold"
-      }
+    },
+    caracteres: {
+        fontSize: 30,
+        fontWeight: "bold"
+    }
 })
